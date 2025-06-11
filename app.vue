@@ -43,6 +43,10 @@ onMounted(() => {
     return shader;
   }
 
+  // Create the two shaders
+  const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
+  const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
+
   function createProgram(gl, vShader, fShader) {
     const program = gl.createProgram();
     gl.attachShader(program, vShader);
@@ -55,8 +59,6 @@ onMounted(() => {
     return program;
   }
 
-  const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
-  const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
   const program = createProgram(gl, vertexShader, fragmentShader);
   gl.useProgram(program);
 
