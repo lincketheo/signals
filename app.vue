@@ -17,10 +17,7 @@ onMounted(() => {
     attribute vec2 a_position;
     uniform float u_angle;
     void main() {
-      float cosA = cos(u_angle);
-      float sinA = sin(u_angle);
-      mat2 rot = mat2(cosA, -sinA, sinA, cosA);
-      gl_Position = vec4(rot * a_position, 0, 1);
+      gl_Position = vec4(a_position, 0, 1);
     }
   `;
 
@@ -62,12 +59,25 @@ onMounted(() => {
   const program = createProgram(gl, vertexShader, fragmentShader);
   gl.useProgram(program);
 
-  // Triangle vertices (centered)
-  const vertices = new Float32Array([
-    0.0,  0.5,
-    -0.5, -0.5,
-    0.5, -0.5
-  ]);
+  const points = [1, 4, 5, 1, 10, 0.1, 1.3, 5.1, 2, 20, 1, 2.3, -1, 1, 2, 3, 4, 5, 6, 7, 8, 1]
+
+  const max = Math.max(...points);
+
+  const vertexArray = [];
+
+  for (let i = 0; i < points.length - 1; i++) {
+    const x1 = (i / (points.length - 1)) * 2 - 1;
+    const y1 = (points[i] / max) * 2 - 1;
+
+    const x2 = ((i + 1) / (points.length - 1)) * 2 - 1;
+    const y2 = (points[i + 1] / max) * 2 - 1;
+
+    vertexArray.push(x1, y1);
+    vertexArray.push(x2, y2);
+  }
+
+  const vertices = new Float32Array(vertexArray);
+  console.log(vertices)
 
   const buffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
@@ -83,11 +93,11 @@ onMounted(() => {
     const angle = time * 0.001; // radians
 
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-    gl.clearColor(0.05, 0.05, 0.05, 1);
+    gl.clearColor(0.05, 0.05, 0.05, vertices.length / 2);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     gl.uniform1f(angleUniformLoc, angle);
-    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    gl.drawArrays(gl.LINES, 0, vertices.length / 2);
 
     requestAnimationFrame(render);
   }
